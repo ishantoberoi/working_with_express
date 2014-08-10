@@ -1,0 +1,41 @@
+{{#section "head"}}
+	<script src="//cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.3.0/handlebars.min.js"></script>
+	<script type="text/x-handlebars-template" id="nurseryRhymeTemplate">
+	Marry had a little <b>\{{animal}}</b>, its <b>\{{bodyPart}}</b> was <b\{{adjective}}</b> as a <b>\{{noun}}</b>.
+	</script>
+{{/section}}
+
+{{#section 'jquery'}}
+<script type="text/html">
+	$(document).ready(function(){
+	var nurseryRhymeTemp = Handlebars.compile($("#nurseryRhymeTemplate").html()); 
+	var $nurseryRhyme = $("#nurseryRhyme");
+
+	$("#btnrhyme").on("click",function(e){
+		e.preventDefault();
+		$nurseryRhyme.html(nurseryRhymeTemp({
+		animal:"basilik",
+		bodyPart:"tail",
+		adjective:"sharp",
+		noun:"a needle"
+	}));
+
+	$("#btnrhymeajax").on("click",function(e){
+		e.preventDefault();
+		$.ajax('/data/nursery-rhyme',{
+			success: function(data){
+				$nurseryRhyme.html(nurseryRhymeTemp(data))
+			}
+		})
+	});	
+
+	});
+
+	});
+</script>
+{{/section}}
+
+<div id="nurseryRhyme">Click a button...</div>
+<hr>
+<input type="button" id="btnrhyme" value="Rhyme_Simple">
+<input type="button" id="btnrhymeajax" value="Rhyme_Ajax">

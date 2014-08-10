@@ -1,0 +1,22 @@
+{{#section 'head'}}
+<!-- we want Google to ignore this page -->
+<meta name="robots" content="noindex">
+<style type="text/css">
+.span-txt{
+	color: red;
+}
+</style>
+{{/section}}
+<span class="span-txt">Test Page</span>
+<p>We'ar testing some jQuery stuff.</p>
+<input type="button" class="btn" value="try">
+{{#section "jquery"}}
+<script>
+	$(document).ready(function(){
+		$(".btn").on("click",function(){
+			$(".span-txt").html("It Works")
+		})
+	});
+		
+</script>
+{{/section}}
