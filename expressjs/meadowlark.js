@@ -45,7 +45,14 @@ app.use(function(req,res,next){
 	next();
 });
 
+var credentials = require("./credentials.js");
+
+// for cookies
+app.use(require("cookie-parser")(credentials.cookieSecret));
+
 app.get("/",function(req,res){
+	res.cookie("monster","nom nom"); // cookies
+	res.cookie("signed_monster","nom nom",{signed:true});
 	res.render("home");
 });
 
@@ -79,6 +86,8 @@ app.post("/process",function(req,res){
 
 app.get("/jquerytest",function(req,res){
 	res.render("jquerytest");
+	console.log(req.cookies.monster);
+	console.log(req.cookies.signed_monster);
 });
 
 app.get("/header",function(){
@@ -124,14 +133,9 @@ app.post("/contest/vacation-photo",function(req,res){
 
 /* File Upload ends */
 
-
 app.listen(app.get("port"),function(){
 	console.log("Express started on localhost:"+app.get("port")+"; press Ctrl+C to terminate");
 });
-
-
-
-
 
 function getWeatherData(){
 	return {
