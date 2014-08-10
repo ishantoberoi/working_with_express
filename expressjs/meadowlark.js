@@ -49,11 +49,27 @@ var credentials = require("./credentials.js");
 
 // for cookies
 app.use(require("cookie-parser")(credentials.cookieSecret));
+// for sessions
+app.use(require("express-session")());
+
+app.use(function(req,res,next){
+	/* if there is a flash message, transfer it to the context, then clear it */
+	res.locals.flash = req.session.flash;
+	delete req.session.flash;
+	next();
+});
 
 app.get("/",function(req,res){
-	res.cookie("monster","nom nom"); // cookies
-	res.cookie("signed_monster","nom nom",{signed:true});
+	//res.cookie("monster","nom nom"); // cookies
+	//res.cookie("signed_monster","nom nom",{signed:true});
+	/* for sessions use below lines. Sessions are all perfomred on Request object. Response object doenot have session property */
+	req.session.userName = "Anoymous";
+	var colorScheme = req.session.colorScheme || "dark";
 	res.render("home");
+
+	/* req.session.userName = null     to set it to null but doesnot remove it 
+
+	    delete req.session.colorScheme              actually removes it*/
 });
 
 app.get("/about",function(req,res){
@@ -65,7 +81,39 @@ app.get("/newsletter",function(req,res){
 });
 
 app.get("/newsletterajax",function(req,res){
-	res.render("newsletterajax");	
+	// flash messages using session 
+	var name = req.body.name || "", email  = req.body.email || "";
+	if(!email  === "uboishant@yahoo.com")// just a validation, use regex check here
+	{
+		if(req.xhr) return res.json({"error":"invalid email address..use ubo.oberoi@gmail.com"});
+		req.session.flash = {
+			type:"danger",
+			intro:"Validation Error!",
+			message:"The email is invalid",
+		};
+		return res.redirect(303,"/jquerytest"); 
+	}
+	// new NewsLetterSignup({name:name,email:email}).save(function(err){
+	// 	if(err){
+	// 		if(req.xhr) return res.json({"error":"db error"});
+	// 		req.session.flash = {
+	// 			type:"danger",
+	// 			intro:"Database error",
+	// 			message:"There was a database error !",
+	// 		}
+	// 		res.redirect(303,"/about");
+	// 	}
+
+		if(req.xhr)return res.json({success:true});
+		req.session.flash = {
+			type:"success",
+			intro:"Thank you!",
+			message:"You have been signed up !!!",
+		}
+		return res.redirect(303,"/home");
+
+
+//	res.render("newsletterajax");	
 });
 
 app.post("/processajax",function(req,res){
