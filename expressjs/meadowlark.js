@@ -53,6 +53,30 @@ app.use(function(req,res,next){
 	next();
 });
 
+/* Sending Email */
+var nodemailer = require("nodemailer");
+
+var mailTransport = nodemailer.createTransport("SMTP",{
+	service : 'Gmail',
+	port:"465",
+	auth : {
+		user : credentials.gmail.user,
+		pass : credentials.gmail.password,
+	}
+});
+
+mailTransport.sendMail({
+	from:"'Ishant Oberoi' <ubo.oberoi@gmail.com>",
+	to:"ishant.oberoi@flipkart.com",
+	subject:"Testing Express Mailer..Meadowlark Tour",
+	text: "Just see it works brilliantly"
+},function(err){
+	if(err)console.log("Unabble to send mail :"+error);
+});
+
+/* Sending Email ends*/
+
+
 /* Routes begin here */
 
 app.get("/",function(req,res){
@@ -112,7 +136,7 @@ app.get("/jquerytest",function(req,res){
 	res.render("jquerytest");
 });
 
-app.get("/header",function(){
+app.get("/header",function(req,res){
 	res.set("Content-Type","text/plain");
 	var s= "";
 	for(var name in req.header){
