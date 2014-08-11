@@ -31,8 +31,7 @@ var fortune = require("./lib/fortune.js"); // for function to be exposed by exte
 var credentials = require("./credentials.js");
 
 app.use(require("cookie-parser")(credentials.cookieSecret));
-
-//console.log(__dirname);
+app.use(require("express-session")());
 
 // The order in which u declare ur routes is important...if u put 404 and 500 before actual
 //routes every page will give error 
@@ -48,24 +47,54 @@ app.use(function(req,res,next){
 	next();
 });
 
+app.use(function(req,res,next){
+	res.locals.flash = req.session.flash;
+	delete req.session.flash;
+	next();
+});
+
+/* Routes begin here */
+
 app.get("/",function(req,res){
-	res.cookie("monster","nom nom");
-	res.cookie("signed_monster","nom nom",{signed:true});
+	//eq.session.userName = "Anonymous";
+	//var colorScheme = req.session.colorScheme || "dark";
 	res.render("home");
 });
 
 app.get("/about",function(req,res){
 	res.render("about", {fortune : fortune.getFortune()});
-	//console.log(req.cookies.monster);
-	//console.log(req.signedCookies.monster);
-	//res.clearCookie('monster');
-	//res.clearCookie('signed_monster');
 });
 
+// app.get("/newsletter",function(req,res){
+// 	res.render("newsletter",{csrf:"CSRF token goes here"});	
+// });
+
+/* flash messages with sessions */
 app.get("/newsletter",function(req,res){
-	res.render("newsletter",{csrf:"CSRF token goes here"});	
+	res.render("newsletter");
 });
 
+app.post('/process', function(req, res){
+	var name = req.body.name || '', email = req.body.email || '';
+	if(email !== "uboishant@yahoo.com") {
+		if(req.xhr) return res.json({ error: 'Invalid name email address.' });
+		req.session.flash = {
+		type: 'danger',
+		intro: 'Validation error!',
+		message: 'The email address you entered was not valid.',
+	};
+	return res.redirect(303, '/jquerytest');
+}
+	if(req.xhr) return res.json({ success: true });
+		req.session.flash = {
+		type: 'success',
+		intro: 'Thank you!',
+		message: 'You have now been signed up for the newsletter.',
+	};
+	return res.redirect(303, '/about');
+});
+
+/* flash messages with sessions ends */
 app.get("/newsletterajax",function(req,res){
 	res.render("newsletterajax");	
 });
@@ -77,13 +106,6 @@ app.post("/processajax",function(req,res){
 	else{
 		res.redirect("302","/about")
 	}
-});
-
-app.post("/process",function(req,res){
-	console.log("FORM querstring: "+req.query.form+"\n");
-	console.log("CSRF token from hidden field: "+req.body.csrf+"\n");
-	console.log('Email (from visible form field): ' + req.body.email);
-	res.redirect(303, '/about');
 });
 
 app.get("/jquerytest",function(req,res){
