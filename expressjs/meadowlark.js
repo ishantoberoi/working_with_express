@@ -31,6 +31,13 @@ var fortune = require("./lib/fortune.js"); // for function to be exposed by exte
 var credentials = require("./credentials.js");
 
 app.use(require("cookie-parser")(credentials.cookieSecret));
+app.use(require("express-session")());
+
+app.use(function(req,res,next){
+	res.locals.flash = req.session.flash;
+	delete req.session.flash;
+	next();
+});
 
 //console.log(__dirname);
 
@@ -73,6 +80,8 @@ switch(app.get("env")){
 					console.log(app.get("env"));
 					break;
 }
+
+//mongoose.connect(credentials.mongo.development.connectionString,opts);
 
 var Vacation = require("./models/vacation.js");
 Vacation.find(function(err,vacations){
@@ -137,7 +146,7 @@ app.get("/vacations",function(req,res){
 				}
 			})
 		};
-		console.log(context);
+	//	console.log(context);
 		res.render("vacations",context);
 	});
 });

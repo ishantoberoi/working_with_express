@@ -6,3 +6,4 @@ var vacationInSeasonListenerSchema = mongoose.Schema({
 });
 
 var VacationInSeasonListener = mongoose.model("VacationInSeasonListener",vacationInSeasonListenerSchema);
+module.exports = VacationInSeasonListener;
