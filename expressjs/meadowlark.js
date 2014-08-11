@@ -7,12 +7,11 @@ var handlebars = require("express3-handlebars")
 				.create({
 					defaultLayout:"main",
 					helpers: {
-						section: function(name,options){
-							if(!this._sections){
-								this._sections = {};
-								this._sections[name] = options.fn(this);
-								return null;
-							}
+						section: function(name, options){
+					  if(!this._sections) this._sections = {}; 
+					  
+						this._sections[name] = options.fn(this); 
+						return null;
 						}
 					}
 				});
@@ -176,7 +175,7 @@ function getWeatherData(){
 /* Always at last */
 // custom 404 page
 app.use(function(req,res){
-	res.staus(404);
+	res.status(404);
 	res.render("404");
 });
 
