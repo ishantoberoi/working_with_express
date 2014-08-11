@@ -48,6 +48,132 @@ app.use(function(req,res,next){
 	next();
 });
 
+
+/* Connecting to and working with MongoDB */
+app.set("env","development"); // setting a global varaible
+
+var mongoose = require("mongoose");
+var opts = {
+	server:{
+		socketOptions:{keepAlive:1}
+	}
+}
+console.log(app.get("env"));
+switch(app.get("env")){
+	case "development":
+			mongoose.connect(credentials.mongo.development.connectionString,opts);
+			console.log(credentials.mongo.development.connectionString);
+			break;
+	case "production":
+			mongoose.connect(credentials.mongo.production.connectionString,opts);
+			console.log(credentials.mongo.development.connectionString);
+			break;
+	default:
+					//throw new Error('Unknown execution environment: '+app.get('env'));
+					console.log(app.get("env"));
+					break;
+}
+
+var Vacation = require("./models/vacation.js");
+Vacation.find(function(err,vacations){
+	if(vacations.length) return;
+
+	new Vacation({
+		name: 'Hood River Day Trip',
+		slug: 'hood-river-day-trip',
+		category: 'Day Trip',
+		sku: 'HR199',
+		description: 'Spend a day sailing on the Columbia and enjoying craft beers in Hood River!',
+		priceInCents: 9995,
+		tags: ['day trip', 'hood river', 'sailing', 'windsurfing', 'breweries'],
+		inSeason: true,
+		maximumGuests: 16,
+		available: true,
+		packagesSold: 0,
+	}).save();
+
+	new Vacation({
+		name: 'Oregon Coast Getaway',
+		slug: 'oregon-coast-getaway',
+		category: 'Weekend Getaway',
+		sku: 'OC39',
+		description: 'Enjoy the ocean air and quaint coastal towns!',
+		priceInCents: 269995,
+		tags: ['weekend getaway', 'oregon coast', 'beachcombing'],
+		inSeason: false,
+		maximumGuests: 8,
+		available: true,
+		packagesSold: 0,
+	}).save();
+
+	new Vacation({
+		name: 'Rock Climbing in Bend',
+		slug: 'rock-climbing-in-bend',
+		category: 'Adventure',
+		sku: 'B99',
+		description: 'Experience the thrill of climbing in the high desert.',
+		priceInCents: 289995,
+		tags: ['weekend getaway', 'bend', 'high desert', 'rock climbing'],
+		inSeason: true,
+		requiresWaiver: true,
+		maximumGuests: 4,
+		available: false,
+		packagesSold: 0,
+		notes: 'The tour guide is currently recovering from a skiing accident.',
+	}).save();
+
+});
+
+app.get("/vacations",function(req,res){
+	Vacation.find({available:true},function(err,vacations){
+		var context = {
+			vacations : vacations.map(function(vacation){
+				return {
+					sku:vacation.sku,
+					name:vacation.name,
+					description:vacation.description,
+					price:vacation.getDisplayPrice(),
+					inSeason:vacation.inSeason,
+				}
+			})
+		};
+		console.log(context);
+		res.render("vacations",context);
+	});
+});
+
+var VacationInSeasonListener = require("./models/vacationInSeasonListener.js");
+app.get("/notify-me-when-in-season",function(req,res){
+	res.render("notify-me-when-in-season",{sku:req.query.sku});
+});
+
+app.post("/notify-me-when-in-season",function(req,res){
+	VacationInSeasonListener.update(
+		{email:req.body.email},
+		{$push:{skus:req.body.sku}},
+		{upsert:true},
+		function(err){
+			if(err){
+					console.error(err.stack);
+					req.session.flash = {
+					type: 'danger',
+					intro: 'Ooops!',
+					message: 'There was an error processing your request.',
+				};
+				return res.redirect(303, '/vacations');
+			}
+			req.session.flash = {
+				type: 'success',
+				intro: 'Thank you!',
+				message: 'You will be notified when this vacation is in season.',
+			};
+			return res.redirect(303, '/vacations');
+		}
+	);
+});
+
+/* Connecting to and working with MongoDB ends */
+
 app.get("/",function(req,res){
 	res.cookie("monster","nom nom");
 	res.cookie("signed_monster","nom nom",{signed:true});
@@ -56,10 +182,6 @@ app.get("/",function(req,res){
 
 app.get("/about",function(req,res){
 	res.render("about", {fortune : fortune.getFortune()});
-	//console.log(req.cookies.monster);
-	//console.log(req.signedCookies.monster);
-	//res.clearCookie('monster');
-	//res.clearCookie('signed_monster');
 });
 
 app.get("/newsletter",function(req,res){
