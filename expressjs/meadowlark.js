@@ -10,9 +10,9 @@ var handlebars = require("express3-handlebars")
 						section: function(name,options){
 							if(!this._sections){
 								this._sections = {};
+							}
 								this._sections[name] = options.fn(this);
 								return null;
-							}
 						}
 					}
 				});
@@ -28,6 +28,9 @@ app.use(require("body-parser")()); // form handling POST data
 
 var fortune = require("./lib/fortune.js"); // for function to be exposed by external liberary /lib folder
 
+var credentials = require("./credentials.js");
+
+app.use(require("cookie-parser")(credentials.cookieSecret));
 
 //console.log(__dirname);
 
@@ -46,11 +49,17 @@ app.use(function(req,res,next){
 });
 
 app.get("/",function(req,res){
+	res.cookie("monster","nom nom");
+	res.cookie("signed_monster","nom nom",{signed:true});
 	res.render("home");
 });
 
 app.get("/about",function(req,res){
 	res.render("about", {fortune : fortune.getFortune()});
+	//console.log(req.cookies.monster);
+	//console.log(req.signedCookies.monster);
+	//res.clearCookie('monster');
+	//res.clearCookie('signed_monster');
 });
 
 app.get("/newsletter",function(req,res){
@@ -128,10 +137,6 @@ app.post("/contest/vacation-photo",function(req,res){
 app.listen(app.get("port"),function(){
 	console.log("Express started on localhost:"+app.get("port")+"; press Ctrl+C to terminate");
 });
-
-
-
-
 
 function getWeatherData(){
 	return {
