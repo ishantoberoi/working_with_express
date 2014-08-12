@@ -48,6 +48,17 @@ app.use(function(req,res,next){
 	next();
 });
 
+app.set("env","development");
+
+app.use(function(req,res,next){
+	res.locals.showTests = app.get("env") !== "production" && req.query.test == "1";
+	console.log(res.locals.showTests);
+	next();
+});
+
+
+
+// Defining routes 
 app.get("/",function(req,res){
 	res.cookie("monster","nom nom");
 	res.cookie("signed_monster","nom nom",{signed:true});
@@ -55,11 +66,10 @@ app.get("/",function(req,res){
 });
 
 app.get("/about",function(req,res){
-	res.render("about", {fortune : fortune.getFortune()});
-	//console.log(req.cookies.monster);
-	//console.log(req.signedCookies.monster);
-	//res.clearCookie('monster');
-	//res.clearCookie('signed_monster');
+	res.render("about", {
+		fortune : fortune.getFortune(),
+		pageTestScript:"/qa/tests-about.js"
+	});
 });
 
 app.get("/newsletter",function(req,res){
@@ -110,6 +120,15 @@ app.get('/data/nursery-rhyme',function(){
 		adjective:"bushy",
 		noun:"heck",
 	});
+});
+
+
+app.get("/tours/hood-river",function(req,res){
+	res.render("tours/hood-river");
+});
+
+app.get("/tours/request-group-rate",function(req,res){
+	res.render("tours/request-group-rate");
 });
 
 /* File Upload */
