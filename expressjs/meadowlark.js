@@ -172,7 +172,7 @@ function getWeatherData(){
 /* Always at last */
 // custom 404 page
 app.use(function(req,res){
-	res.staus(404);
+	res.stauts(404);
 	res.render("404");
 });
 
