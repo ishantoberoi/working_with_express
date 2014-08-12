@@ -83,7 +83,7 @@ switch(app.get("env")){
 
 //mongoose.connect(credentials.mongo.development.connectionString,opts);
 
-var Vacation = require("./models/vacation.js");
+var Vacation = require("./models/vacations.js");
 Vacation.find(function(err,vacations){
 	if(vacations.length) return;
 
