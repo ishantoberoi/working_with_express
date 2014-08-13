@@ -1,4 +1,4 @@
-var express = require("express");
+	var express = require("express");
 
 var app = express();
 //console.log(app);
@@ -60,12 +60,14 @@ app.use(function(req,res,next){
 app.set("env","development"); // setting a global varaible
 
 var mongoose = require("mongoose");
-var opts = {
+var opts={
 	server:{
 		socketOptions:{keepAlive:1}
 	}
 }
 console.log(app.get("env"));
+//mongoose.connect(credentials.mongo.development.connectionString,opts);
+
 switch(app.get("env")){
 	case "development":
 			mongoose.connect(credentials.mongo.development.connectionString,opts);
@@ -76,7 +78,7 @@ switch(app.get("env")){
 			console.log(credentials.mongo.development.connectionString);
 			break;
 	default:
-					//throw new Error('Unknown execution environment: '+app.get('env'));
+					throw new Error('Unknown execution environment: '+app.get('env'));
 					console.log(app.get("env"));
 					break;
 }
@@ -85,7 +87,7 @@ switch(app.get("env")){
 
 var Vacation = require("./models/vacations.js");
 Vacation.find(function(err,vacations){
-	if(vacations.length) return;
+	if(vacations.length) {console.log("From Db");return;}
 
 	new Vacation({
 		name: 'Hood River Day Trip',
@@ -126,7 +128,7 @@ Vacation.find(function(err,vacations){
 		inSeason: true,
 		requiresWaiver: true,
 		maximumGuests: 4,
-		available: false,
+		available: true,
 		packagesSold: 0,
 		notes: 'The tour guide is currently recovering from a skiing accident.',
 	}).save();
@@ -303,7 +305,7 @@ function getWeatherData(){
 /* Always at last */
 // custom 404 page
 app.use(function(req,res){
-	res.staus(404);
+	res.status(404);
 	res.render("404");
 });
 

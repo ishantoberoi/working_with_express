@@ -4,12 +4,18 @@ module.exports = {
 		user: "ubo.oberoi@gmail.com",
 		password:"password", 
 	},
-	mongo: {
-		development : {
-			connectionString:"mongodb://ishant:login@db@ds055709.mongolab.com:55709/express_meadowlark"
+	mongo:{
+		development:{
+			connectionString: 'mongodb://localhost/testmeadowlark',
 		},
 		production:{
-			connectionString:"mongodb://ishant:login@db@ds055709.mongolab.com:55709/express_meadowlark"
-		}
+			connectionString:'mongo ds055689.mongolab.com:55689/testmeadowlark-uishant-plogin@db'
+		},
 	}
 }
+
+//ds055689.mongolab.com:55689/testmeadowlark-uishant-plogin@db
+
+//mongodb://ishant:login@db@ds055689.mongolab.com:55689/testmeadowlark
+
+//mongodb://localhost/testmeadowlark'  ---->    Works
