@@ -8,4 +8,4 @@ var fortuneCookies = ["Conquer your fears or they will conquer you.",
 exports.getFortune = function(){
 	var idx = Math.floor(Math.random() * fortuneCookies.length);
 	return fortuneCookies[idx];
-}
+};

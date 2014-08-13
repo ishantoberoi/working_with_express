@@ -83,7 +83,7 @@ app.post("/processajax",function(req,res){
 		res.send({success:true});
 	}
 	else{
-		res.redirect("302","/about")
+		res.redirect("302","/about");
 	}
 });
 
