@@ -87,6 +87,16 @@ app.post("/processajax",function(req,res){
 	}
 });
 
+
+app.get('/tours/hood-river', function(req, res){
+	res.render('tours/hood-river');
+});
+
+app.get('/tours/request-group-rate', function(req, res){
+	res.render('tours/request-group-rate');
+});
+
+
 app.post("/process",function(req,res){
 	console.log("FORM querstring: "+req.query.form+"\n");
 	console.log("CSRF token from hidden field: "+req.body.csrf+"\n");
