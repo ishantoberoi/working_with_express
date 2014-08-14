@@ -9,12 +9,28 @@
 {{/section}}
 <span class="span-txt">Test Page</span>
 <p>We'ar testing some jQuery stuff.</p>
+<p class="ajax-res"></p>
 <input type="button" class="btn" value="try">
 {{#section "jquery"}}
 <script>
 	$(document).ready(function(){
 		$(".btn").on("click",function(){
+			BOOMR.plugins.RT.startTimer("t_done");
 			$(".span-txt").html("It Works");
+			//BOOMR.page_ready();
+			$.ajax({
+				url:"/data_boomerang/testdata.json",
+				dataType:"json",
+				success:function(data){
+					$(".ajax-res").html(data.name.module[0].happy);
+					BOOMR.plugins.RT.done();
+					//BOOMR.page_ready();
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+        	console.log(xhr.status);
+        	console.log(thrownError);
+      	}
+			});
 		});
 	});		
 </script>
