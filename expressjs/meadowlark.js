@@ -112,6 +112,16 @@ app.get('/data/nursery-rhyme',function(){
 	});
 });
 
+
+app.get("/imagerotate",function(req,res){
+	res.render("imagerotate");
+});
+
+app.get("/imagerotate2",function(req,res){
+	res.render("imagerotate2");
+});
+
+
 /* File Upload */
 var formidable = require("formidable");
 app.get("/contest/vacation-photo",function(req,res){

@@ -1,0 +1,20 @@
+		<div class="auoRotateWrap">
+			<img src = "http://placehold.it/200x200" data-timer="1000" data-imgList="http://placehold.it/200x200;http://placehold.it/100x100;http://placehold.it/150x100;http://placehold.it/200x220;http://placehold.it/50x220;">
+		</div>
+		{{#section "jquery"}}
+		<script type="text/javascript">
+			var img, len, time, current, arr = [], wrap = $('.auoRotateWrap');
+	        (function(){
+	          img = wrap.find('img');
+	          arr = img.attr('data-imgList').split(';');
+	          current = 0;
+	          len = arr.length -2;
+	          start();
+	        })();
+	        function start(){
+	          current = (current<len) ? current+1 : 0 ;
+	          img.attr('src', arr[current]);
+	          setTimeout(start, 1000);
+	        }
+		</script>
+		{{/section}}

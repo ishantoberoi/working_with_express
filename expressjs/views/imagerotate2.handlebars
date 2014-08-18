@@ -1,0 +1,37 @@
+		{{#section "head"}}
+			<style type="text/css">
+			#container{
+				height: 300px;
+				width: 200px;
+				border: 1px solid;
+			}
+			.hidden{
+				display: none;
+			}
+			.active{
+				display: block;
+			}
+		</style>
+		{{/section}}
+		<div class="auoRotateWrap">
+			<img class = "active" src = "http://placehold.it/200x200">
+			<img class = "hidden" src = "http://placehold.it/200x100">
+			<img class = "hidden" src = "http://placehold.it/20x300">
+			<img class = "hidden" src = "http://placehold.it/120x200">
+			<img class = "hidden" src = "http://placehold.it/100x20">
+		</div>
+		{{#section "jquery"}}
+		<script type="text/javascript">
+			var img, len, time, current, arr = [], wrap = $('.auoRotateWrap');
+	        (function(){
+	          current = 0;
+	          start();
+	        })();
+	        function start(){
+	          $(wrap.find('img')[current]).removeClass().addClass('hidden');
+	          current = (current<4) ? current+1 : 0 ;
+	          $(wrap.find('img')[current]).removeClass().addClass('active');
+	          setTimeout(start, 1000);
+	        }
+		</script>
+		{{/section}}
