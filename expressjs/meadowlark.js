@@ -29,9 +29,12 @@ app.use(require("body-parser")()); // form handling POST data
 var fortune = require("./lib/fortune.js"); // for function to be exposed by external liberary /lib folder
 
 var credentials = require("./credentials.js");
-
+var MongoSessionStore = require('session-mongoose')(require('connect'));
+var sessionStore = new MongoSessionStore({
+	url:credentials.mongo.development.connectionString
+});
 app.use(require("cookie-parser")(credentials.cookieSecret));
-app.use(require("express-session")());
+app.use(require("express-session")({store:sessionStore}));
 
 app.use(function(req,res,next){
 	res.locals.flash = req.session.flash;
@@ -137,17 +140,25 @@ Vacation.find(function(err,vacations){
 
 app.get("/vacations",function(req,res){
 	Vacation.find({available:true},function(err,vacations){
+		var currency = req.session.currency || 'USD';
 		var context = {
+			currency :currency,
 			vacations : vacations.map(function(vacation){
 				return {
 					sku:vacation.sku,
 					name:vacation.name,
 					description:vacation.description,
-					price:vacation.getDisplayPrice(),
+					price:convertFromUSD(vacation.priceInCents/100,currency),
+					qty:vacation.qty,
 					inSeason:vacation.inSeason,
 				}
 			})
 		};
+		switch(currency){
+			case 'USD': context.currencyUSD = 'selected'; break;
+			case 'GBP': context.currencyGBP = 'selected'; break;
+			case 'BTC': context.currencyBTC = 'selected'; break;
+		}
 	  //console.log(context);
 		res.render("vacations",context);
 	});
@@ -244,6 +255,22 @@ app.get('/data/nursery-rhyme',function(){
 		noun:"heck",
 	});
 });
+
+
+app.get('/set-currency/:currency',function(req,res){
+	req.session.currency = req.params.currency;
+	return res.redirect(303,"/vacations");
+});
+
+function convertFromUSD(value, currency){
+	switch(currency){
+		case 'USD': return value * 1;
+		case 'GBP': return value * 0.6;
+		case 'BTC': return value * 0.0023707918444761;
+		default: return NaN;
+	}
+}
+
 
 /* File Upload */
 var formidable = require("formidable");
