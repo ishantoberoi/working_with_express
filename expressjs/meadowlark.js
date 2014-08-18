@@ -148,7 +148,7 @@ app.get("/vacations",function(req,res){
 				}
 			})
 		};
-	//	console.log(context);
+	  //console.log(context);
 		res.render("vacations",context);
 	});
 });
